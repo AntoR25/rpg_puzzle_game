@@ -1,0 +1,113 @@
+@page "/GridMap"
+@using Microsoft.AspNetCore.Components.Web
+
+@code {
+    // Taille globale de la map
+    private const int Rows = 100;
+    private const int Cols = 100;
+
+    // Taille du viewport (= ce qu'on voit)
+    private const int ViewSize = 21; // impair = joueur centré
+
+    // Taille d'une case
+    private const int TileSize = 28;
+
+    // Joueur
+    private int playerX = 50;
+    private int playerY = 50;
+
+    // Camera offset
+    private int camX => Math.Clamp(playerX - ViewSize / 2, 0, Cols - ViewSize);
+    private int camY => Math.Clamp(playerY - ViewSize / 2, 0, Rows - ViewSize);
+
+    private void HandleKey(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "ArrowUp": Move(0, -1); break;
+            case "ArrowDown": Move(0, 1); break;
+            case "ArrowLeft": Move(-1, 0); break;
+            case "ArrowRight": Move(1, 0); break;
+        }
+    }
+
+    private void Move(int dx, int dy)
+    {
+        int nx = playerX + dx;
+        int ny = playerY + dy;
+
+        if (nx >= 0 && nx < Cols && ny >= 0 && ny < Rows)
+        {
+            playerX = nx;
+            playerY = ny;
+        }
+    }
+
+    private string GetTileClass(int x, int y)
+    {
+        if (x == playerX && y == playerY) return "player";
+
+        // Objets test
+        if ((x == 20 && y == 20) || (x == 40 && y == 10)) return "tree";
+        if (x == 60 && y == 60) return "house";
+
+        return "tile";
+    }
+}
+
+<!-- CONTENEUR QUI RECOIT LE CLAVIER -->
+<div tabindex="0" class="viewport" @onkeydown="HandleKey">
+
+    <div class="map" style="@($"width:{ViewSize*TileSize}px;height:{ViewSize*TileSize}px;")">
+        @for (int y = 0; y < ViewSize; y++)
+        {
+            <div class="row">
+                @for (int x = 0; x < ViewSize; x++)
+                {
+                    int mapX = x + camX;
+                    int mapY = y + camY;
+
+                    <div class="@GetTileClass(mapX, mapY)"
+                         style="@($"width:{TileSize}px;height:{TileSize}px;")"></div>
+                }
+            </div>
+        }
+    </div>
+
+    <p>Utilise les flèches du clavier. Le joueur est centré et la caméra suit.</p>
+</div>
+
+<style>
+    .viewport {
+        border: 2px solid black;
+        width: fit-content;
+        height: fit-content;
+        overflow: hidden;
+        margin: 20px;
+        outline: none;
+    }
+
+    .row {
+        display: flex;
+    }
+
+    .tile {
+        background-color: lightgray;
+        border: 1px solid #aaa;
+    }
+
+    .player {
+        background-color: darkblue;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    .tree {
+        background-color: green;
+    }
+
+    .house {
+        background-color: saddlebrown;
+    }
+</style>
+

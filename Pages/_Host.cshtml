@@ -1,0 +1,25 @@
+@page "/"
+@namespace RpgPuzzleGame.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <base href="~/" />
+    <title>RpgPuzzleGame</title>
+</head>
+<body>
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>
+<script>
+    window.enableArrowKeys = function (dotnet) {
+        document.addEventListener("keydown", function (e) {
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                e.preventDefault(); // empêche le scroll
+                dotnet.invokeMethodAsync("OnKeyPressed", e.key);
+            }
+        });
+    }
+</script>

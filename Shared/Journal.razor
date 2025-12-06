@@ -1,0 +1,17 @@
+@inject GameState GameState
+<div>
+    <h4>Journal des énigmes</h4>
+    @if (GameState.Solved.Count == 0)
+    {
+        <p>Aucune énigme résolue pour le moment.</p>
+    }
+    else
+    {
+        <ul>
+        @foreach (var puzzle in GameState.Solved)
+        {
+            <li>@puzzle</li>
+        }
+        </ul>
+    }
+</div>
